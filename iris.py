@@ -2,7 +2,8 @@
 from sklearn.datasets import load_iris 
 from sklearn import tree
 import numpy as np
-
+import graphviz
+import tkinter
 #calling load_iris() function
 fl_iris=load_iris()
 
@@ -36,6 +37,13 @@ else:
    output='verginia'
 print(output)
 
-
+out_data=tree.export_graphviz(algo,
+                    out_file=None,
+                    feature_names=fl_iris.feature_names,
+                    class_names=fl_iris.target_names,
+                    filled=True,
+                    rounded=True
+                    )
+graphviz.Source(out_data)
 
 
