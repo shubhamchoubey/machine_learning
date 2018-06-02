@@ -12,25 +12,25 @@ import subprocess
 import webbrowser
 
 #starting try block for further error handeling
-#try:
-	#defining function for text to speech conversion
-def tts(text):
-	tts=gTTS(text,lang='en')
-	tts.save('text.mp3')
-	subprocess.getoutput('mpg321 text.mp3')
-
-def speech_recog():
-		#loading class recognizer
-	recog=sr.Recognizer()
-	with sr.Microphone() as source:
-		audio=recog.listen(source)
-		#storing input in a variable
-	speech_string=recog.recognize_google(audio).strip()
-	return speech_string
-
-wlcome_text="Hello i am a bot, how can i help you ?"
-tts(wlcome_text)
 try:
+	#defining function for text to speech conversion
+	def tts(text):
+		tts=gTTS(text,lang='en')
+		tts.save('text.mp3')
+		subprocess.getoutput('mpg321 text.mp3')
+	
+	def speech_recog():
+			#loading class recognizer
+		recog=sr.Recognizer()
+		with sr.Microphone() as source:
+			audio=recog.listen(source)
+			#storing input in a variable
+		speech_string=recog.recognize_google(audio).strip()
+		return speech_string
+	
+	wlcome_text="Hello i am a bot, how can i help you ?"
+	tts(wlcome_text)
+	
 	while True:
 		out_sr=speech_recog()
 		user_input=out_sr.split()
@@ -50,14 +50,14 @@ try:
 				a=a+[output[0]]
 			#storing the exit codes of each word present in string 
 		c=a+b
-#			if any(i=='make' and i=='directory' for i in user_input):
-#				subprocess.getoutput('mkdir /home/Desktop/')		
-	
+	#		if any(i=='make' and i=='directory' for i in user_input):
+	#			subprocess.getoutput('mkdir /home/Desktop/')		
+
 		if any(i=='go' or i=='leave' for i in user_input ):
 			end='Have a good day'
 			tts(end)
 			break
-	
+
 		elif any(i=='make' for i in user_input) and any(j=='directory' or j=='directories' for j in user_input):
 			#introducing user_defined module	
 			import bot_dir as bot
@@ -70,13 +70,13 @@ try:
 				tts(make_speech)
 				dir_name=speech_recog()
 				status=bot.bot_mkdir(dir_name,dir_count)				
-
+	
 			else:
 					ask_speech='You want to name directories or you want me to name them ?'
 					tts(ask_speech)
 					user_choice=speech_recog()
 					print(user_choice.split())
-					if any(i=='I' for i in user_choice.split()) and any(i=="will" for i in user_choice.split()):
+					if any(i=='I' for i in user_choice.split()) and any(i=="will" or i=="want" for i in user_choice.split()):
 						make_speech='Tell me the names by which you want to introduce directories ?'
 						tts(make_speech)
 						for i in range(dir_count):
@@ -84,36 +84,50 @@ try:
 							status=bot.bot_mkdir(dir_name,1)
 							tts(status)
 					else:
-						make_speech='Alright i will name them but tell me the specific name'                          						
+						make_speech='Alright i will name them but tell me the specific name'                          							
 						tts(make_speech)
 						dir_name=speech_recog()
-						status=bot.bot_mkdir(dir_name,dir_count)										
+						status=bot.bot_mkdir	(dir_name,dir_count)										
 						tts(status)			
-
-		elif any(i==0 for i in c)==False or any(j=='search' for j in user_input):
-			
-#			for user_input[k] in range(len(user_input))
-			for k in range(len(user_input)):
-				if user_input[k]=='search':
-					search_list=user_input[k+1:len(user_input)]	
-					print(search_list)
-					search_str=" ".join(search_list)
-					webbrowser.open_new_tab('https://www.google.com/search?q='+search_str)
-			else:
-				webbrowser.open_new_tab('https://www.google.com/search?q='+out_sr)
-						
-#			inc_task='My freind please assign me some relevant task'
-#			tts(inc_task)		
 	
-		elif any(i=='listen' or i=='play' for i in user_input ):
-			import glob
+	
+		elif any(user_input[i]=='play' or user_input[i]=='watch' or user_input[i]=='see' for i in range(len(user_input))):
+			try:
+				ind=user_input.index('play')
+			except ValueError:
+				print('...')
+				try:
+					ind=user_input.index('watch')
+				except ValueError:
+					ind=user_input.index('see')
+
+			vid_list=user_input[ind+1:]
+			vid_str=" ".join(vid_list)
+			print(vid_str)
+			#importing userdefined module for video management
+			import video as vid
+			vid.video_play(vid_str)
+	
+		elif any(i==0 for i in c)==False or any(j=='search' for j in user_input):
+				
+	#			for user_input[k] in range(len(user_input))
+			ind=user_input.index('search')
+			search_list=user_input[ind+1:]	
+			search_str=" ".join(search_list)
+			print(search_str)
+			webbrowser.open_new_tab('https://www.google.com/search?q={0}'.format(search_str))
+			
+				
+	#			inc_task='My freind please assign me some relevant task'
+	#			tts(inc_task)		
+		else:
+				
+			webbrowser.open_new_tab('https://www.google.com/search?q='+out_sr)
 					
-
-
+					
 except sr.UnknownValueError:
 	error='Please check your connectivity'
 	tts(error)
-
 
 
 
