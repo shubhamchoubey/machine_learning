@@ -108,21 +108,38 @@ try:
 			import video as vid
 			vid.video_play(vid_str)
 	
+		elif any(i=='send' for i in user_input) and any(i=='mail' for i in user_input):
+			recv_id_text='Please tell me the receiver address'
+			tts(recv_id_text)
+			recv_id_str=speech_recog().split()
+			recv_id="".join(recv_id_str)
+			print(recv_id)
+			sub_text="What subject do you want to attach ?"
+			tts(sub_text)
+			subject=speech_recog()
+			mail_text="What message should i send ?"
+			tts(mail_text)
+			body=speech_recog()
+			import mail_access as ma
+			ma.send_mail(recv_id,subject,body)
+
 		elif any(i==0 for i in c)==False or any(j=='search' for j in user_input):
-				
+			try:		
 	#			for user_input[k] in range(len(user_input))
-			ind=user_input.index('search')
-			search_list=user_input[ind+1:]	
-			search_str=" ".join(search_list)
-			print(search_str)
-			webbrowser.open_new_tab('https://www.google.com/search?q={0}'.format(search_str))
-			
+				ind=user_input.index('search')
+				search_list=user_input[ind+1:]	
+				search_str=" ".join(search_list)
+				print(search_str)
+				webbrowser.open_new_tab('https://www.google.com/search?q={0}'.format(search_str))
+			except:
+				print(...)
+			finally:
 				
+				webbrowser.open_new_tab('https://www.google.com/search?q='+out_sr)
 	#			inc_task='My freind please assign me some relevant task'
 	#			tts(inc_task)		
-		else:
+		
 				
-			webbrowser.open_new_tab('https://www.google.com/search?q='+out_sr)
 					
 					
 except sr.UnknownValueError:
