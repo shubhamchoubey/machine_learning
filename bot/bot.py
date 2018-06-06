@@ -18,7 +18,7 @@ try:
 		tts=gTTS(text,lang='en')
 		tts.save('text.mp3')
 		subprocess.getoutput('mpg321 text.mp3')
-	
+			
 	def speech_recog():
 			#loading class recognizer
 		recog=sr.Recognizer()
@@ -37,9 +37,12 @@ try:
 		print(user_input)
 		a=[]
 		b=[]
+
+		# to run a command	
 		for i in user_input:
-			output=subprocess.getstatusoutput(i)
-			if output[0]==0 and any(i=="search" for i in user_input)==False :
+			output=subprocess.getstatusoutput(i)			
+			if output[0]==0 and any(i=="run" for i in user_input) and any(i=='search' for i in user_input):
+				
 				speech='My freind {0} is {1}'.format(i,output[1])
 				tts(speech)
 				#storing exit code of a word having exit code 0
@@ -52,12 +55,13 @@ try:
 		c=a+b
 	#		if any(i=='make' and i=='directory' for i in user_input):
 	#			subprocess.getoutput('mkdir /home/Desktop/')		
-
+		# to close the bot 
 		if any(i=='go' or i=='leave' for i in user_input ):
 			end='Have a good day'
 			tts(end)
 			break
-
+		
+		# to manage directories
 		elif any(i=='make' for i in user_input) and any(j=='directory' or j=='directories' for j in user_input):
 			#introducing user_defined module	
 			import bot_dir as bot
@@ -76,7 +80,7 @@ try:
 					tts(ask_speech)
 					user_choice=speech_recog()
 					print(user_choice.split())
-					if any(i=='I' for i in user_choice.split()) and any(i=="will" or i=="want" for i in user_choice.split()):
+					if any(i=='I' for i in user_choice.split()) and any(i=="will" or i=="want" for i in user_choice.split()) and any(i=='don\'t' for i in user_choice.split())==False:
 						make_speech='Tell me the names by which you want to introduce directories ?'
 						tts(make_speech)
 						for i in range(dir_count):
@@ -89,17 +93,24 @@ try:
 						dir_name=speech_recog()
 						status=bot.bot_mkdir	(dir_name,dir_count)										
 						tts(status)			
-	
-	
-		elif any(user_input[i]=='play' or user_input[i]=='watch' or user_input[i]=='see' for i in range(len(user_input))):
-			try:
-				ind=user_input.index('play')
-			except ValueError:
-				print('...')
-				try:
-					ind=user_input.index('watch')
-				except ValueError:
-					ind=user_input.index('see')
+
+		# to play songs	at gaana.com	
+		elif any(user_input[i]=='play'  or user_input[i]=='listen' for i in range(len(user_input))) and any(user_input[i]=='song' for i in range(len(user_input))):
+#			print('hello')
+			ind=user_input.index('song')
+#			print(ind)
+			song_list=user_input[ind+1:]
+			song_str=" ".join(song_list)
+#			print(song_str)
+			#importing userdefined module for video management
+			import songs 
+			status=songs.songs_play(song_str)
+			
+
+		# to play youtube videos 	
+		elif any(user_input[i]=='play' or user_input[i]=='watch' or user_input[i]=='see' for i in range(len(user_input))) and any(user_input[i]=='video' for i in range(len(user_input))):
+			
+			ind=user_input.index('of')
 
 			vid_list=user_input[ind+1:]
 			vid_str=" ".join(vid_list)
@@ -107,7 +118,7 @@ try:
 			#importing userdefined module for video management
 			import video as vid
 			vid.video_play(vid_str)
-	
+		# to send mail from your gmail account
 		elif any(i=='send' for i in user_input) and any(i=='mail' for i in user_input):
 			recv_id_text='Please tell me the receiver address'
 			tts(recv_id_text)
@@ -121,8 +132,10 @@ try:
 			tts(mail_text)
 			body=speech_recog()
 			import mail_access as ma
-			ma.send_mail(recv_id,subject,body)
-
+			process=ma.send_mail(recv_id,subject,body)
+			tts(process)
+	
+		# to search something on google		
 		elif any(i==0 for i in c)==False or any(j=='search' for j in user_input):
 			try:		
 	#			for user_input[k] in range(len(user_input))
