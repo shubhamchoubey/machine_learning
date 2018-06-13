@@ -137,7 +137,7 @@ try:
 			import mail_access as ma0
 			process=ma.send_mail(recv_id,subject,body)
 			tts(process)
-	
+		# code for surveillance like cctv camera
 		elif any(i=='monitor' or i=='surveillance' for i in user_input ):
 			import cv2
 			import itertools
