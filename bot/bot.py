@@ -31,10 +31,13 @@ try:
 	wlcome_text="Hello i am a bot, how can i help you ?"
 	tts(wlcome_text)
 	
+	
+	
+
 	while True:
 		out_sr=speech_recog()
 		user_input=out_sr.split()
-		print(user_input)
+		print(out_sr)
 		a=[]
 		b=[]
 
@@ -131,10 +134,71 @@ try:
 			mail_text="What message should i send ?"
 			tts(mail_text)
 			body=speech_recog()
-			import mail_access as ma
+			import mail_access as ma0
 			process=ma.send_mail(recv_id,subject,body)
 			tts(process)
 	
+		elif any(i=='monitor' or i=='surveillance' for i in user_input ):
+			import cv2
+			import itertools
+			cap=cv2.VideoCapture(0)
+		
+			img1=cap.read()[1]
+			img2=cap.read()[1]
+			img3=cap.read()[1]
+			
+			#img6=cap.read()[1]
+			btg1=cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)
+			btg2=cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+			btg3=cv2.cvtColor(img3,cv2.COLOR_BGR2GRAY)
+			#btg6=cv2.cvtColor(img6,cv2.COLOR_BGR2GRAY)
+			width=cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+			height=cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+			video_format=cv2.VideoWriter_fourcc(*'XVID')
+			video_output=cv2.VideoWriter('warning.avi',video_format,25.0,(int(width),int(height)))
+			while True:
+			
+				diff1=cv2.absdiff(btg1,btg2)
+				diff2=cv2.absdiff(btg2,btg3)
+				diff3=cv2.absdiff(diff1,diff2)
+													
+				status,frame=cap.read()
+	#			sub1=cv2.subtract(x,y)
+				size=diff3.size
+				precise=int(0.99*size)
+				list_conv=diff3.tolist()
+				a=list(itertools.chain(*list_conv))
+		#		print(a.count(0))
+		#		print(precise)
+				count=0
+				for i in a:
+					if i<=10:
+						count+=1 
+			#	print(count)
+			#	print(size)
+				if count<=precise:
+			#		tts('warning, security breached')
+					print('warning')
+					video_output.write(frame)
+					
+			#		print('warning')
+#			print(diff3)	
+
+				
+				#cv2.imshow('original',frame)
+		
+				btg1=btg2	
+				btg2=btg3
+				btg3=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+				if cv2.waitKey(1) & 0xFF==ord('q'):
+					break 
+	
+			
+
+			cap.release()
+			cv2.destroyAllWindows()
+				
+
 		# to search something on google		
 		elif any(i==0 for i in c)==False or any(j=='search' for j in user_input):
 			try:		
